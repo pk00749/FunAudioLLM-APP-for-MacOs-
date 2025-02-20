@@ -57,3 +57,14 @@ sudo CUDA_VISIBLE_DEVICES="0" DASHSCOPE_API_KEY="YOUR-DS-API-TOKEN" python app.p
 https://YOUR-IP-ADDRESS:60002/
 
 
+Trouble shooting
+- lib/libsox.dylib' (no such file)
+Make sure had installed sox:
+```shell
+brew install sox
+```
+Manually soft link:
+```shell
+ln -s /opt/homebrew/lib/libsox.dylib ~/miniconda3/envs/funaudiollm/lib/libsox.dylib
+```
+

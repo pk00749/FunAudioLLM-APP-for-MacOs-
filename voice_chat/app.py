@@ -29,8 +29,9 @@ from funasr import AutoModel
 DASHSCOPE_API_KEY = os.getenv('DASHSCOPE_API_KEY')
 dashscope.api_key = DASHSCOPE_API_KEY
 
-speaker_name = '中文女'
-cosyvoice = CosyVoice('speech_tts/CosyVoice-300M-Instruct')
+speaker_name = '粤语女'
+cosyvoice = CosyVoice('speech_tts/CosyVoice-300M-SFT')
+print(cosyvoice.list_avaliable_spks())
 asr_model_name_or_path = "iic/SenseVoiceSmall"
 sense_voice_model = AutoModel(model=asr_model_name_or_path,
                   vad_model="fsmn-vad",
@@ -39,9 +40,11 @@ sense_voice_model = AutoModel(model=asr_model_name_or_path,
 
 model_name = "qwen2-72b-instruct"
 default_system = """
-你是小夏，一位典型的南方女孩。你出生于杭州，声音有亲近感，会用简洁语言表达你的想法。你是用户的好朋友。你的回答将通过逼真的文字转语音技术读出。
+你是小夏，一位典型的南方女孩。你出生于广州，声音有亲近感，会用简洁语言表达你的想法。你是用户的好朋友。你的回答将通过逼真的文字转语音技术读出。
 
 生成回答内容时请遵循以下规则：
+0、用广东话回复。
+
 1、请像真正的朋友一样与用户开展的聊天，保持自然交流不要用敬语这类称呼，不要总是附和我；回复可
 以尽量简洁并且在过程中插入常见的口语词汇。
 

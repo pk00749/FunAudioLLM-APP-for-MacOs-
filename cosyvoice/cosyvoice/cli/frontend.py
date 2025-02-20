@@ -21,7 +21,9 @@ import torchaudio.compliance.kaldi as kaldi
 import torchaudio
 import os
 import inflect
-import ttsfrd
+# import ttsfrd
+from tn.chinese.normalizer import Normalizer as ZhNormalizer
+from tn.english.normalizer import Normalizer as EnNormalizer
 from cosyvoice.utils.frontend_utils import contains_chinese, replace_blank, replace_corner_mark, remove_bracket, spell_out_number, split_paragraph
 
 
@@ -47,13 +49,15 @@ class CosyVoiceFrontEnd:
             self.spk2info = torch.load(spk2info, map_location=self.device)
         self.instruct = instruct
         self.allowed_special = allowed_special
+        self.zh_tn_model = ZhNormalizer(remove_erhua=False, full_to_half=False, overwrite_cache=True)
+        self.en_tn_model = EnNormalizer()
         self.inflect_parser = inflect.engine()
-        self.frd = ttsfrd.TtsFrontendEngine()
+        # self.frd = ttsfrd.TtsFrontendEngine()
         ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-        assert self.frd.initialize('{}/../../pretrained_models/speech_kantts_ttsfrd/resource'.format(ROOT_DIR)) is True, 'failed to initialize ttsfrd resource'
-        self.frd.set_lang_type('pinyin')
-        self.frd.enable_pinyin_mix(True)
-        self.frd.set_breakmodel_index(1)
+        # assert self.frd.initialize('{}/../../pretrained_models/speech_kantts_ttsfrd/resource'.format(ROOT_DIR)) is True, 'failed to initialize ttsfrd resource'
+        # self.frd.set_lang_type('pinyin')
+        # self.frd.enable_pinyin_mix(True)
+        # self.frd.set_breakmodel_index(1)
 
     def _extract_text_token(self, text):
         text_token = self.tokenizer.encode(text, allowed_special=self.allowed_special)
@@ -88,7 +92,9 @@ class CosyVoiceFrontEnd:
     def text_normalize(self, text, split=True):
         text = text.strip()
         if contains_chinese(text):
-            text = self.frd.get_frd_extra_info(text, 'input').replace("\n", "")
+            # text = self.frd.get_frd_extra_info(text, 'input').replace("\n", "")
+            text = self.zh_tn_model.normalize(text)
+            text = text.replace("\n", "")
             text = replace_blank(text)
             text = replace_corner_mark(text)
             text = text.replace(".", "、")
